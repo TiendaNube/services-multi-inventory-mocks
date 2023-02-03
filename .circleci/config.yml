@@ -1,0 +1,217 @@
+version: 2.1
+
+##### Aliases
+restore-cache: &restore_cache
+  restore_cache:
+    keys:
+      - yarn-packages-{{ checksum "yarn.lock" }}
+
+save-cache: &save_cache
+  save_cache:
+    key: yarn-packages-{{ checksum "yarn.lock" }}
+    paths:
+      - ~/.cache/yarn
+
+fast-checkout: &fast-checkout
+  attach_workspace:
+    at: /home/circleci
+
+# Filters: master (production deployment) | anything (staging branch deployment)
+filter-feature: &filter-feature
+  branches:
+    ignore:
+      - /develop/
+filter-staging: &filter-staging
+  branches:
+    only:
+      - /develop/
+    ignore:
+      - /.*/
+filter-production: &filter-production
+  branches:
+    only: /develop/
+    ignore:
+      - /.*/
+
+##### ORBs
+orbs:
+  aws-cli: circleci/aws-cli@2.0.3
+  aws-ecr: circleci/aws-ecr@7.0.0
+  eks: tiendanube/eks@1.7.2
+  precheck: tiendanube/precheck@0.1.0
+  slack: circleci/slack@4.4.2
+
+##### Executors
+executors:
+  default:
+    docker:
+      - image: circleci/node:15.2.0-stretch
+    resource_class: "large"
+  python:
+    docker:
+      - image: circleci/python:3-stretch
+    resource_class: "small"
+
+##### Jobs
+jobs:
+  variable-validate:
+    executor: python
+    steps:
+      - precheck/naming_validation_cmd:
+          name_to_validate: << pipeline.git.branch >>
+
+  checkout:
+    executor: default
+    steps:
+      - checkout
+      - persist_to_workspace:
+          root: /home/circleci
+          paths:
+            - project
+
+  build-push-image-ecr:
+    executor: python
+    parameters:
+      account_url:
+        type: string
+      region:
+        type: string
+      dockerfile:
+        default: Dockerfile
+        type: string
+      tag_prefix:
+        default: ""
+        type: string
+    steps:
+      - <<: *fast-checkout
+      - setup_remote_docker:
+          version: 19.03.13
+      - aws-ecr/build-and-push-image:
+          repo: ${CIRCLE_PROJECT_REPONAME}
+          tag: <<parameters.tag_prefix>>${CIRCLE_SHA1:0:7}
+          account-url: << parameters.account_url >>
+          checkout: false
+          region: << parameters.region >>
+          dockerfile: << parameters.dockerfile >>
+          create-repo: true
+
+##### Workflows
+workflows:
+  version: 2.1
+  # Workflow: Feature
+  feature-test-and-deploy:
+    jobs:
+      - checkout:
+          filters:
+            <<: *filter-feature
+      - variable-validate:
+          context: microservices
+          filters:
+            <<: *filter-feature
+      - authorize-workflow:
+          type: approval
+          filters:
+            <<: *filter-feature
+          requires:
+            - checkout
+            - variable-validate
+      - build-push-image-ecr:
+          name: feat-build-push-docker-image
+          region: AWS_REGION_STAGING
+          account_url: AWS_ECR_ACCOUNT_URL_STAGING
+          tag_prefix: feat-
+          context: microservices
+          requires:
+            - authorize-workflow
+          filters:
+            <<: *filter-feature
+      - eks/helm-deploy:
+          name: feat-eks-deployment
+          pre-steps:
+            - run:
+                name: replace branch name
+                command: |
+                  echo "export CIRCLE_BRANCH=$(echo $CIRCLE_BRANCH | tr / -)" >> $BASH_ENV
+          context: microservices
+          cluster-name: staging
+          region: us-west-2
+          s3-chart-repo: tiendanube-charts
+          release-name: ${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}
+          values-file: values-staging.yaml
+          namespace: ${CIRCLE_PROJECT_REPONAME}
+          chart: tiendanube-charts/microservices-v6
+          image-tag: feat-${CIRCLE_SHA1:0:7}
+          mesh: true
+          args: |
+            --set fullnameOverride=${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH} \
+            --set nameOverride=${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH} \
+            --set labels.app=${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH} \
+            --set labels.service=${CIRCLE_PROJECT_REPONAME} \
+            --set-string labels.branch=${CIRCLE_BRANCH} \
+            --set-string labels.commit_id=${CIRCLE_SHA1:0:7} \
+            --set-string labels.protected_branch="false" \
+            --set-string labels.version=${CIRCLE_BRANCH} \
+            --set ingress.hosts[0]=${CIRCLE_PROJECT_REPONAME}.${CIRCLE_BRANCH}.nubestaging.com \
+          requires:
+            - feat-build-push-docker-image
+          filters:
+            <<: *filter-feature
+
+  # Workflow: Staging
+  staging-test-and-deploy:
+    jobs:
+      - checkout:
+          filters:
+            <<: *filter-staging
+      - variable-validate:
+          context: microservices
+          filters:
+            <<: *filter-staging
+      - authorize-workflow:
+          type: approval
+          filters:
+            <<: *filter-staging
+          requires:
+            - checkout
+            - variable-validate
+      - build-push-image-ecr:
+          name: stg-build-push-docker-image
+          region: AWS_REGION_STAGING
+          account_url: AWS_ECR_ACCOUNT_URL_STAGING
+          tag_prefix: stg-
+          context: microservices
+          requires:
+            - authorize-workflow
+          filters:
+            <<: *filter-staging
+      - eks/helm-deploy:
+          name: stg-eks-deployment
+          pre-steps:
+            - run:
+                name: replace branch name
+                command: |
+                  echo "export CIRCLE_BRANCH=$(echo $CIRCLE_BRANCH | tr / -)" >> $BASH_ENV
+          context: microservices
+          cluster-name: staging
+          region: us-west-2
+          s3-chart-repo: tiendanube-charts
+          release-name: ${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}
+          values-file: values-staging.yaml
+          namespace: ${CIRCLE_PROJECT_REPONAME}
+          chart: tiendanube-charts/microservices-v6
+          image-tag: stg-${CIRCLE_SHA1:0:7}
+          mesh: true
+          args: |
+            --set fullnameOverride=${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH} \
+            --set nameOverride=${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH} \
+            --set labels.app=${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH} \
+            --set labels.service=${CIRCLE_PROJECT_REPONAME} \
+            --set-string labels.branch=${CIRCLE_BRANCH} \
+            --set-string labels.commit_id=${CIRCLE_SHA1:0:7} \
+            --set-string labels.protected_branch="false" \
+            --set-string labels.version=${CIRCLE_BRANCH} \
+            --set ingress.hosts[0]=${CIRCLE_PROJECT_REPONAME}.${CIRCLE_BRANCH}.nubestaging.com \
+          requires:
+            - stg-build-push-docker-image
+          filters:
+            <<: *filter-staging

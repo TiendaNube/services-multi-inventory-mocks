@@ -1,0 +1,4 @@
+{
+    "status": "{{jsonPath request.body '$.status'}}",
+    "fulfilled_at": "{{now}}"
+}

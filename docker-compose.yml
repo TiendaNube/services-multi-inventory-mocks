@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  np_mocks:
+    container_name: np_mocks
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: multicd/mocks
+    ports:
+      - 3001:8080

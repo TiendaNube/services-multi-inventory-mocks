@@ -1,0 +1,134 @@
+{
+    "mappings": [
+        {
+            "request": {
+                "method": "GET",
+                "urlPattern": "/v1/.*/orders/.*/fulfillment-orders/",
+                "headers": {
+                    "Authentication": {
+                        "matches": "[Bb]earer [a-zA-Z0-9]+"
+                    }
+                }
+            },
+            "response": {
+                "status": 200,
+                "bodyFileName": "responses/get-fulfillment-orders.json",
+                "transformers": [
+                    "response-template"
+                ]
+            }
+        },
+        {
+            "request": {
+                "method": "GET",
+                "urlPattern": "/v1/.*/orders/.*/fulfillment-orders/.*/",
+                "headers": {
+                    "Authentication": {
+                        "matches": "[Bb]earer [a-zA-Z0-9]+"
+                    }
+                }
+            },
+            "response": {
+                "status": 200,
+                "bodyFileName": "responses/get-fulfillment-order.json",
+                "transformers": [
+                    "response-template"
+                ]
+            }
+        },
+        {
+            "request": {
+                "method": "DELETE",
+                "urlPattern": "/v1/.*/orders/.*/fulfillment-orders/.*/",
+                "headers": {
+                    "Authentication": {
+                        "matches": "[Bb]earer [a-zA-Z0-9]+"
+                    }
+                }
+            },
+            "response": {
+                "status": 204
+            }
+        },
+        {
+            "request": {
+                "method": "POST",
+                "urlPattern": "/v1/.*/orders/.*/fulfillment-orders/",
+                "headers": {
+                    "Authentication": {
+                        "matches": "[Bb]earer [a-zA-Z0-9]+"
+                    },
+                    "Content-Type": {
+                        "equalTo": "application/json",
+                        "caseInsensitive": true
+                    }
+                },
+                "bodyPatterns": [
+                    { "matchesJsonPath": "$.assigned_location.id" },
+                    { "matchesJsonPath": "$.line_items" },
+                    { "matchesJsonPath": "$.recipient" },
+                    { "matchesJsonPath": "$.shipping" },
+                    { "matchesJsonPath": "$.destination" }
+                ]
+            },
+            "response": {
+                "status": 200,
+                "bodyFileName": "responses/get-fulfillment-order.json",
+                "transformers": [
+                    "response-template"
+                ]
+            }
+        },
+        {
+            "request": {
+                "method": "PATCH",
+                "urlPattern": "/v1/.*/orders/.*/fulfillment-orders/.*/",
+                "headers": {
+                    "Authentication": {
+                        "matches": "[Bb]earer [a-zA-Z0-9]+"
+                    },
+                    "Content-Type": {
+                        "equalTo": "application/json",
+                        "caseInsensitive": true
+                    }
+                },
+                "bodyPatterns": [
+                    { "matchesJsonPath": "$.status" }
+                ]
+            },
+            "response": {
+                "status": 200,
+                "bodyFileName": "responses/patch-status.json",
+                "transformers": [
+                    "response-template"
+                ]
+            }
+        },
+        {
+            "request": {
+                "method": "PATCH",
+                "urlPattern": "/v1/.*/orders/.*/fulfillment-orders/.*/",
+                "headers": {
+                    "Authentication": {
+                        "matches": "[Bb]earer [a-zA-Z0-9]+"
+                    },
+                    "Content-Type": {
+                        "equalTo": "application/json",
+                        "caseInsensitive": true
+                    }
+                },
+                "bodyPatterns": [
+                    { "matchesJsonPath": "$.number" },
+                    { "matchesJsonPath": "$.url" }
+                ]
+            },
+            "response": {
+                "status": 200,
+                "bodyFileName": "responses/patch-tracking.json",
+                "transformers": [
+                    "response-template"
+                ]
+            }
+        }
+    ]
+}

@@ -1,0 +1,128 @@
+{
+    "id": "{{request.pathSegments.[6]}}",
+    "number": "123456",
+    "total_quantity": 12,
+    "total_weight": 12.12,
+    "total_price": {
+        "value": 123.45,
+        "currency": "BRL"
+    },
+    "assigned_location": {
+       "id": "123e4567-e89b-12d3-a456-426614174000",
+       "name": "Location name",
+       "address": {
+          "zipcode": "12910802",
+          "street": "Some Street",
+          "number": "100",
+          "floor": "Some Floor",
+          "locality": "Some Locality",
+          "city": "Some City",
+          "reference": "Some Reference",
+          "between_streets": "Some Between Streets",
+          "province": {
+             "code": "SP",
+             "name": "São Paulo"
+          },
+          "region": {
+             "code": "SE",
+             "name": "Sudeste"
+          },
+          "country": {
+             "code": "BR",
+             "name": "Brasil"
+          }
+       }
+   },
+   "line_items": [
+       {
+           "id": "123456",
+           "quantity": 1,
+           "order_line_item_id": "12345678",
+           "created_at": "2022-11-24T10:20:19+00:00",
+           "updated_at": "2022-11-24T10:20:19+00:00"          
+       }
+   ],
+   "recipient": {
+      "name": "Recipient name",
+      "phone": "11988864311",
+      "identifier": "11223344B"
+   },
+   "shipping": {
+       "type": "pickup|ship",
+       "carrier": {
+          "name": "Some Carrier Name",
+          "id": "12345"
+       },
+       "option": {
+          "name": "Some Option Name",
+          "code": "some-option-code",
+          "reference": "some-option-ref"
+       },
+       "merchant_cost": {
+          "value": 123.14,
+          "currency": "BRL"
+       },
+      "consumer_cost": {
+          "value": 123.14,
+          "currency": "BRL"
+      },
+      "min_delivery_date": "2022-11-24T10:20:19+00:00",
+      "max_delivery_date": "2022-11-25T10:20:19+00:00",
+      "pickup_details": {
+          "id": "pickup-option-id",
+          "name": "Some option pickup detail name",
+          "address": {
+              "zipcode": "12910802",
+              "street": "Some Street",
+              "number": "100",
+              "floor": "Some Floor",
+              "locality": "Some Locality",
+              "city": "Some City",
+              "reference": "Some Reference",
+              "between_streets": "Some Between Streets",
+              "province": {
+                 "name": "São Paulo",
+                 "code": "SP"
+              },
+              "region": {
+                 "name": "Sudeste",
+                 "code": "SE"
+              },
+              "country": {
+                 "name": "Brasil",
+                 "code": "BR"
+              }
+          }
+       }
+    },
+    "destination": {
+       "zipcode": "12910802",
+       "street": "Some Street",
+       "number": "100",
+       "floor": "Some Floor",
+       "locality": "Some Locality",
+       "city": "Some City",
+       "reference": "Some Reference",
+       "between_streets": "Some Between Streets",
+       "province": {
+           "name": "São Paulo",
+           "code": "SP"
+       },
+       "region": {
+           "name": "Sudeste",
+           "code": "SE"
+       },
+       "country": {
+           "name": "Brasil",
+           "code": "BR"
+       }
+    },
+    "status": "PENDING",
+    "tracking_info": {
+        "url": null,
+        "code": null
+    },
+    "fulfilled_at": "2022-11-24T10:20:19+00:00",
+    "created_at": "2022-11-24T10:20:19+00:00",
+    "updated_at": "2022-11-24T10:20:19+00:00"
+}
