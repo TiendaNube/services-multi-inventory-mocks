@@ -14,6 +14,8 @@ docker run -it --rm -p 3001:8080 --name wiremock -v $PWD:/home/wiremock wiremock
 
 ## Usage
 
+### Fulfillment Orders API
+
 ```bash
 curl --request GET --url http://localhost:3001/v1/123/orders/456/fulfillment-orders/ -H "Authentication: Bearer ABC"
 curl --request GET --url http://localhost:3001/v1/123/orders/456/fulfillment-orders/123/ -H "Authentication: Bearer ABC"
@@ -45,6 +47,14 @@ curl --request PATCH --url http://localhost:3001/v1/123/orders/123/fulfillment-o
   "status": "FULFILLED"
 }
 ```
+
+### Orders API
+
+```bash
+curl --request GET --url http://localhost:3001/v1/123/orders/456/ -H "Authentication: Bearer ABC"
+curl --request GET --url http://localhost:3001/v1/123/orders/456/\?aggregates\=fulfillments -H "Authentication: Bearer ABC"
+```
+
 
 To replicate real world performance it's possible to add delays to every call. For example, we could simulate a 250ms average response time using:
 ```bash
