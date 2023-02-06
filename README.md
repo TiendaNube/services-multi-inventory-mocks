@@ -15,13 +15,13 @@ docker run -it --rm -p 3001:8080 --name wiremock -v $PWD:/home/wiremock wiremock
 ## Usage
 
 ```bash
-curl --request GET --url http://localhost:3001/v1/123/orders/123/fulfillment-orders/ -H "Authentication: Bearer ABC"
-curl --request GET --url http://localhost:3001/v1/123/orders/123/fulfillment-orders/123/ -H "Authentication: Bearer ABC"
-curl --request DELETE --url http://localhost:3001/v1/123/orders/123/fulfillment-orders/123/ -H "Authentication: Bearer ABC"
-curl --request POST --url http://localhost:3001/v1/123/orders/123/fulfillment-orders/ -H "Authentication: Bearer ABC" -H "Content-Type: application/json" -d '
+curl --request GET --url http://localhost:3001/v1/123/orders/456/fulfillment-orders/ -H "Authentication: Bearer ABC"
+curl --request GET --url http://localhost:3001/v1/123/orders/456/fulfillment-orders/123/ -H "Authentication: Bearer ABC"
+curl --request DELETE --url http://localhost:3001/v1/123/orders/456/fulfillment-orders/123/ -H "Authentication: Bearer ABC"
+curl --request POST --url http://localhost:3001/v1/123/orders/456/fulfillment-orders/ -H "Authentication: Bearer ABC" -H "Content-Type: application/json" -d '
 {
   "location": {
-    "id": 123
+    "id": 01GRKDFX9QMNRBE3X5DAV21MGA
   },
   "order": {
     "id": 456
@@ -40,7 +40,7 @@ curl --request POST --url http://localhost:3001/v1/123/orders/123/fulfillment-or
   }
 }
 '
-curl --request PATCH --url http://localhost:3001/v1/123/orders/123/fulfillment-orders/123/ -H "Authentication: Bearer ABC" -H "Content-Type: application/json" -d '
+curl --request PATCH --url http://localhost:3001/v1/123/orders/123/fulfillment-orders/01GRKDJKZ5RH81593CVGXWN2W5/ -H "Authentication: Bearer ABC" -H "Content-Type: application/json" -d '
 {
   "status": "FULFILLED"
 }
