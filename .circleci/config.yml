@@ -141,7 +141,7 @@ workflows:
           namespace: ${CIRCLE_PROJECT_REPONAME}
           chart: tiendanube-charts/microservices-v6
           image-tag: feat-${CIRCLE_SHA1:0:7}
-          mesh: true
+          mesh: false
           args: |
             --set fullnameOverride=${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH} \
             --set nameOverride=${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH} \
@@ -200,7 +200,7 @@ workflows:
           namespace: ${CIRCLE_PROJECT_REPONAME}
           chart: tiendanube-charts/microservices-v6
           image-tag: stg-${CIRCLE_SHA1:0:7}
-          mesh: true
+          mesh: false
           args: |
             --set fullnameOverride=${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH} \
             --set nameOverride=${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH} \
