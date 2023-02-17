@@ -139,9 +139,9 @@ workflows:
           release-name: ${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}
           values-file: values-staging.yaml
           namespace: ${CIRCLE_PROJECT_REPONAME}
-          chart: tiendanube-charts/microservices-v6
+          chart: tiendanube-charts/microservices-v7
           image-tag: feat-${CIRCLE_SHA1:0:7}
-          mesh: true
+          mesh: false
           args: |
             --set fullnameOverride=${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH} \
             --set nameOverride=${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH} \
@@ -152,6 +152,8 @@ workflows:
             --set-string labels.protected_branch="false" \
             --set-string labels.version=${CIRCLE_BRANCH} \
             --set ingress.hosts[0]=${CIRCLE_PROJECT_REPONAME}.${CIRCLE_BRANCH}.nubestaging.com \
+            --set ingress.tls[0].hosts[0]=${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}.nubestaging.com \
+            --set ingress.tls[0].secretName=${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}-secret \           
           requires:
             - feat-build-push-docker-image
           filters:
@@ -198,7 +200,7 @@ workflows:
           release-name: ${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}
           values-file: values-staging.yaml
           namespace: ${CIRCLE_PROJECT_REPONAME}
-          chart: tiendanube-charts/microservices-v6
+          chart: tiendanube-charts/microservices-v7
           image-tag: stg-${CIRCLE_SHA1:0:7}
           mesh: true
           args: |
@@ -211,6 +213,8 @@ workflows:
             --set-string labels.protected_branch="false" \
             --set-string labels.version=${CIRCLE_BRANCH} \
             --set ingress.hosts[0]=${CIRCLE_PROJECT_REPONAME}.${CIRCLE_BRANCH}.nubestaging.com \
+            --set ingress.tls[0].hosts[0]=${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}.nubestaging.com \
+            --set ingress.tls[0].secretName=${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BRANCH}-secret \            
           requires:
             - stg-build-push-docker-image
           filters:
