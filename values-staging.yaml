@@ -49,8 +49,6 @@ service:
 
 ingress:
   enabled: true
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-cert-manager
   paths: ["/"]
   hosts:
     - services-multicd-mocks.nubestaging.com
